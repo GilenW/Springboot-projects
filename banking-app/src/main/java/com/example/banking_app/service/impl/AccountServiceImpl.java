@@ -1,6 +1,7 @@
 package com.example.banking_app.service.impl;
 
 import com.example.banking_app.dto.AccountDto;
+import com.example.banking_app.dto.TransactionDto;
 import com.example.banking_app.dto.TransferFundDto;
 import com.example.banking_app.entity.Account;
 import com.example.banking_app.entity.Transaction;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -22,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
     private TransactionRepository transactionRepository;
     private static final String TRANSACTION_TYPE_DEPOSIT = "DEPOSIT";
     private static final String TRANSACTION_TYPE_WITHDRAW = "WITHDRAW";
+    private static final String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
 
     public AccountServiceImpl(AccountRepository accountRepository,
                               TransactionRepository transactionRepository) {
@@ -113,6 +116,10 @@ public class AccountServiceImpl implements AccountService {
                 .findById(transferFundDto.toAccountId())
                 .orElseThrow(()-> new AccountException("Account does not exists"));
 
+        if(fromAccount.getBalance()<transferFundDto.amount()){
+            throw new RuntimeException("Insufficient amount");
+        }
+
         //debit the amount from account object
 
         fromAccount.setBalance(fromAccount.getBalance()-transferFundDto.amount());
@@ -121,7 +128,38 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
+        Transaction transaction = new Transaction();
+        transaction.setAccountId(transferFundDto.fromAccountId());
+        transaction.setAmount(transferFundDto.amount());
+        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setTransactionType(TRANSACTION_TYPE_TRANSFER);
 
+        transactionRepository.save(transaction);
+
+
+    }
+
+    @Override
+    public List<TransactionDto> getAccountTransactions(Long accountId) {
+
+        List<Transaction> transactions = transactionRepository
+                .findByAccountIdOrderedByTimestampDesc(accountId);
+        return transactions.stream()
+                .map(transaction -> convertEntityToDto(transaction))
+                .collect(Collectors.toList());
+
+
+    }
+
+    private TransactionDto convertEntityToDto(Transaction transaction){
+        TransactionDto transactionDto = new TransactionDto(
+                transaction.getId(),
+                transaction.getAccountId(),
+                transaction.getAmount(),
+                transaction.getTransactionType(),
+                transaction.getTimestamp()
+        );
+        return transactionDto;
     }
 
 }

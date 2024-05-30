@@ -1,8 +1,10 @@
 package com.example.banking_app.controller;
 
 import com.example.banking_app.dto.AccountDto;
+import com.example.banking_app.dto.TransactionDto;
 import com.example.banking_app.dto.TransferFundDto;
 import com.example.banking_app.service.AccountService;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,5 +67,12 @@ public class AccountController {
     public ResponseEntity<String> transferFund(@RequestBody TransferFundDto transferFundDto){
         accountService.transferFunds(transferFundDto);
         return ResponseEntity.ok("Transfer successfully");
+    }
+
+    //Build transaction rest api
+    @GetMapping("/{id}/transactions")
+    public ResponseEntity<List<TransactionDto>> fetchAccountTransactions(@PathVariable("id") Long accountId){
+        List<TransactionDto> transactions = accountService.getAccountTransactions(accountId);
+        return ResponseEntity.ok(transactions);
     }
 }
