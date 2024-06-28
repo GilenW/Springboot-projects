@@ -1,5 +1,6 @@
 package gil.todo_management.controller;
 
+import gil.todo_management.dto.LoginDto;
 import gil.todo_management.dto.RegisterDto;
 import gil.todo_management.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,13 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto){
         String response = authService.register(registerDto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+        String response = authService.login(loginDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
