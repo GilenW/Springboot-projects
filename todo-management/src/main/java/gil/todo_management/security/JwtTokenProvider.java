@@ -18,18 +18,21 @@ public class JwtTokenProvider {
     @Value("${app.jwt-secret}")
     private String jwtSecret;
 
-    @Value("{app.jet-expiration-milliseconds}")
-    private String jwtExpirationDate;
+    @Value("${app.jwt-expiration-milliseconds}")
+    private long jwtExpirationDate;
 
+    // Generate JWT token
     public String generateToken(Authentication authentication){
         String username = authentication.getName();
+
         Date currentDate = new Date();
-        Date expiraDate = new Date(currentDate.getTime() + jwtExpirationDate);
+
+        Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
 
         String token = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(expiraDate)
+                .setExpiration(expireDate)
                 .signWith(key())
                 .compact();
 
@@ -42,17 +45,20 @@ public class JwtTokenProvider {
         );
     }
 
+    // Get username from JWT token
     public String getUsername(String token){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject();
 
+        String username = claims.getSubject();
 
+        return username;
     }
 
+    // Validate JWT Token
     public boolean validateToken(String token){
         Jwts.parserBuilder()
                 .setSigningKey(key())
@@ -60,4 +66,5 @@ public class JwtTokenProvider {
                 .parse(token);
         return true;
     }
+
 }

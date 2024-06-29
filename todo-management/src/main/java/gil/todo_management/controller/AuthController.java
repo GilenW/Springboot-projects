@@ -1,5 +1,6 @@
 package gil.todo_management.controller;
 
+import gil.todo_management.dto.JwtAuthResponse;
 import gil.todo_management.dto.LoginDto;
 import gil.todo_management.dto.RegisterDto;
 import gil.todo_management.service.AuthService;
@@ -22,8 +23,11 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
-        String response = authService.login(loginDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto){
+        String token = authService.login(loginDto);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(token);
+        return new ResponseEntity<>(jwtAuthResponse, HttpStatus.CREATED);
     }
 }
