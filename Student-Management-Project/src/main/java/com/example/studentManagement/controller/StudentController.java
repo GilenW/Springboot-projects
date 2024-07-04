@@ -68,6 +68,16 @@ public class StudentController {
     }
 
 
+    @GetMapping("/students/{studentId}/delete")
+    public String deleteStudent(@PathVariable("studentId") Long studentId){
+
+        studentService.deleteStudentById(studentId);
+        return "redirect:/students";
+
+
+
+    }
+
     @PostMapping("/students/{studentId}")
     public String updateStudent(@PathVariable("studentId") Long studentId,
                                 @Valid @ModelAttribute("student") StudentDto studentDto,
