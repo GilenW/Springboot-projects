@@ -25,8 +25,8 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDto> getAllStudents() {
         List<Student> students = studentRepository.findAll();
         List<StudentDto> studentDtos = students.stream()
-                .map(StudentMapper::mapToStudentDto)
-                .toList();
+                .map((student) -> StudentMapper.mapToStudentDto(student))
+                .collect(Collectors.toList());
         return studentDtos;
     }
 

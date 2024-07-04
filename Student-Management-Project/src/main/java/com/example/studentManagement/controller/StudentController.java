@@ -54,25 +54,33 @@ public class StudentController {
 
     }
     //
-
+    // handler method to handle edit student request
     @GetMapping("/students/{studentId}/edit")
     public String editStudent(@PathVariable("studentId") Long studentId,
                               Model model){
-
-        StudentDto studentDto = studentService.getStudentById(studentId);
-        model.addAttribute("student",studentDto);
+        StudentDto student = studentService.getStudentById(studentId);
+        model.addAttribute("student", student);
         return "edit_student";
-
-
-
     }
-
 
     @GetMapping("/students/{studentId}/delete")
     public String deleteStudent(@PathVariable("studentId") Long studentId){
 
         studentService.deleteStudentById(studentId);
         return "redirect:/students";
+
+
+
+    }
+
+
+    @GetMapping("/students/{studentId}/view")
+    public String viewStudent(@PathVariable("studentId") Long studentId,
+                              Model model){
+        StudentDto studentDto = studentService.getStudentById(studentId);
+        model.addAttribute("student",studentDto);
+        studentService.deleteStudentById(studentId);
+        return "view_student";
 
 
 
