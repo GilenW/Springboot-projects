@@ -8,3 +8,8 @@ export const listEmployees = () =>{
 
 
 export const createEmployee = (employee) => axios.post(REST_API_BASE_URL, employee);
+
+
+export const getEmployeeById = (employeeId) => {
+    return axios.get(EMPLOYEE_BASE_REST_API_URL + '/' + employeeId);
+}
